@@ -14,3 +14,9 @@ class ToggleFavoriteEvent extends SearchEvent {
 
   final GitRepo gitRepo;
 }
+
+class UpdateListEvent extends SearchEvent {
+  UpdateListEvent(this.removedFavorites);
+
+  final List<int> removedFavorites;
+}

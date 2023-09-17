@@ -17,6 +17,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }) : super(SearchInitial()) {
     on<SearchGitReposEvent>(_searchGitRepos, transformer: Debouncer.debounce());
     on<ToggleFavoriteEvent>(_toggleFavorite);
+    on<UpdateListEvent>(_updateListAfterRemovingFavorites);
   }
 
   final FetchGitReposUseCase fetchGitReposUseCase;
@@ -64,5 +65,20 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<void> _updateListAfterRemovingFavorites(UpdateListEvent event, Emitter<SearchState> emit
+      ) async {
+    List<GitRepo> newList = allGitRepos.map((e) {
+      if (event.removedFavorites.contains(e.id)) {
+        return e.copyWith(isFavorite: false);
+      } else {
+        return e;
+      }
+    }).toList();
+    allGitRepos = newList;
+    emit(
+      SearchLoaded(gitRepos: allGitRepos),
+    );
   }
 }
