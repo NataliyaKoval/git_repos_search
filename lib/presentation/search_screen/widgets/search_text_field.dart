@@ -92,6 +92,6 @@ class _SearchTextFieldState extends State<SearchTextField> {
   }
 
   void _onInputChanged(BuildContext context, String value) {
-    context.read<SearchBloc>().add(SearchGitRepos(value));
+    context.read<SearchBloc>().add(SearchGitReposEvent(value));
   }
 }

@@ -8,9 +8,11 @@ class GitRepoListItem extends StatelessWidget {
   const GitRepoListItem({
     Key? key,
     required this.gitRepo,
+    required this.onPressed,
   }) : super(key: key);
 
   final GitRepo gitRepo;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class GitRepoListItem extends StatelessWidget {
               ImageAssets.star,
               color: gitRepo.isFavorite ? AppColors.blue : AppColors.argent,
             ),
-            onPressed: () {},
+            onPressed: onPressed,
           ),
         ],
       ),
