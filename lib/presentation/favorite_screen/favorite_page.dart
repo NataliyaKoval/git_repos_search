@@ -8,6 +8,7 @@ import 'package:git_repos_search/domain/repository/repository.dart';
 import 'package:git_repos_search/domain/use_cases/get_favorites_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/remove_favorites_use_case.dart';
 import 'package:git_repos_search/presentation/favorite_screen/bloc/favorite_cubit.dart';
+import 'package:git_repos_search/presentation/widgets/empty_list_text.dart';
 import 'package:git_repos_search/presentation/widgets/git_repo_list_item.dart';
 
 class FavoritePage extends StatelessWidget {
@@ -57,7 +58,11 @@ class FavoritePage extends StatelessWidget {
                       ),
                     );
                   } else if (state is FavoriteEmpty) {
-                    return Container(color: Colors.green,);
+                    return Center(
+                      child: EmptyListText(
+                        text: AppStrings.noFavorites,
+                      ),
+                    );
                   } else if (state is FavoriteLoading) {
                     return const CircularProgressIndicator();
                   } else {
@@ -74,7 +79,8 @@ class FavoritePage extends StatelessWidget {
 
   PreferredSizeWidget? _buildAppBar(BuildContext context) {
     return AppBar(
-      toolbarHeight: 44,
+
+      toolbarHeight: 54,
       backgroundColor: AppColors.ghostWhite,
       centerTitle: true,
       title: Text(
@@ -82,7 +88,7 @@ class FavoritePage extends StatelessWidget {
         style: const TextStyle(color: AppColors.blackChocolate),
       ),
       leading: Padding(
-        padding: const EdgeInsets.only(left: 15),
+        padding: const EdgeInsets.only(left: 15, top: 7, bottom: 7),
         child: Ink(
           decoration: BoxDecoration(
             color: AppColors.blue,

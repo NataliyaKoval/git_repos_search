@@ -93,7 +93,7 @@ class _SearchPageState extends State<SearchPage> {
 
   PreferredSizeWidget? _buildAppBar(BuildContext context) {
     return AppBar(
-      toolbarHeight: 44,
+      toolbarHeight: 54,
       backgroundColor: AppColors.ghostWhite,
       centerTitle: true,
       title: Text(
@@ -102,7 +102,7 @@ class _SearchPageState extends State<SearchPage> {
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 11),
+          padding: const EdgeInsets.only(right: 15, top: 7, bottom: 7),
           child: Ink(
             decoration: BoxDecoration(
               color: AppColors.blue,
