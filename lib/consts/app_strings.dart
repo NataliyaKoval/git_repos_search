@@ -9,6 +9,8 @@ class AppStrings {
 
   static String get whatHaveFound => 'What we have found';
 
+  static String get whatFound => 'What we found';
+
   static String get searchHistory => 'Search History';
 
   static String get noFavorites =>

@@ -11,10 +11,10 @@ import 'package:git_repos_search/domain/use_cases/get_saved_queries_use_case.dar
 import 'package:git_repos_search/domain/use_cases/save_query_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/toggle_favorite_use_case.dart';
 import 'package:git_repos_search/presentation/favorite_screen/favorite_page.dart';
+import 'package:git_repos_search/presentation/search_screen/widgets/empty_result_container.dart';
 import 'package:git_repos_search/presentation/search_screen/widgets/history_loaded_container.dart';
-import 'package:git_repos_search/presentation/search_screen/widgets/search_results_list.dart';
+import 'package:git_repos_search/presentation/search_screen/widgets/search_loaded_container.dart';
 import 'package:git_repos_search/presentation/search_screen/widgets/search_text_field.dart';
-import 'package:git_repos_search/presentation/widgets/empty_list_text.dart';
 
 import 'bloc/search_bloc.dart';
 
@@ -127,39 +127,18 @@ class _SearchPageState extends State<SearchPage> {
         historyItems: state.historyItems,
       );
     } else if (state is HistoryEmpty) {
-      return Center(
-        child: EmptyListText(
-          text: AppStrings.noHistory,
-        ),
+      return EmptyResultContainer(
+        title: AppStrings.searchHistory,
+        description: AppStrings.noHistory,
       );
     } else if (state is SearchEmpty) {
-      return Center(
-        child: EmptyListText(
-          text: AppStrings.noSearch,
-        ),
+      return EmptyResultContainer(
+        title: AppStrings.whatFound,
+        description: AppStrings.noSearch,
       );
     } else if (state is SearchLoaded) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            AppStrings.whatHaveFound,
-            style: const TextStyle(
-              color: AppColors.blue,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: SearchResultList(
-              gitRepos: state.gitRepos,
-            ),
-          ),
-        ],
+      return SearchLoadedContainer(
+        gitRepos: state.gitRepos,
       );
     } else if (state is SearchLoading) {
       return const Center(child: CircularProgressIndicator());
