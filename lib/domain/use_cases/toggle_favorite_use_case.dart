@@ -12,10 +12,10 @@ class ToggleFavoritesUsecase extends UseCase<GitRepo, GitRepo> {
   @override
   Future<GitRepo> call(GitRepo params) async {
     if(!params.isFavorite) {
-      //repository.addToFavorites(params);
+      repository.addToFavorites(params);
       return params.copyWith(isFavorite: true);
     } else {
-      //repository.removeFromFavorites(params);
+      repository.removeFromFavorites(params);
       return params.copyWith(isFavorite: false);
     }
   }
