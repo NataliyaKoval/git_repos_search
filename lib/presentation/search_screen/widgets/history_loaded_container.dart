@@ -30,8 +30,7 @@ class HistoryLoadedContainer extends StatelessWidget {
           height: 20,
         ),
         Expanded(
-          child: HistoryList(historyItems: historyItems,
-          ),
+          child: HistoryList(historyItems: historyItems),
         ),
       ],
     );

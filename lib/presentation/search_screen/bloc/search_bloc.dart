@@ -38,6 +38,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final GetFavoriteKeysUseCase getFavoriteKeysUseCase;
 
   static const int _itemsCount = 15;
+
   bool isFutureRunning = false;
   List<GitRepo> checkedGitRepos = [];
 
@@ -51,17 +52,17 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
     try {
       await saveQueryUseCase(event.query);
-      GitRepoResponse response = await fetchGitReposUseCase.call(GitRepoParams(
+      GitRepoResponse response = await fetchGitReposUseCase(GitRepoParams(
         query: event.query,
         itemsCount: _itemsCount,
       ));
-      List<GitRepo> allGitRepos = response.items;
-      if (allGitRepos.isEmpty) {
+      List<GitRepo> gitRepos = response.items;
+      if (gitRepos.isEmpty) {
         emit(SearchEmpty());
       } else {
-        List keys = await getFavoriteKeysUseCase();
-        checkedGitRepos = allGitRepos.map((gitRepo) {
-          if (keys.contains(gitRepo.id)) {
+        List favoriteKeys = await getFavoriteKeysUseCase();
+        checkedGitRepos = gitRepos.map((gitRepo) {
+          if (favoriteKeys.contains(gitRepo.id)) {
             return gitRepo.copyWith(isFavorite: true);
           } else {
             return gitRepo;
@@ -81,8 +82,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     try {
       GitRepo changedGitRepo = await toggleFavoritesUsecase(event.gitRepo);
 
-      final index =
-      checkedGitRepos.indexWhere((element) => element.id == event.gitRepo.id);
+      final index = checkedGitRepos
+          .indexWhere((element) => element.id == event.gitRepo.id);
       checkedGitRepos[index] = changedGitRepo;
       emit(
         SearchLoaded(gitRepos: checkedGitRepos),
@@ -116,14 +117,11 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         emit(HistoryEmpty());
       } else {
         List<GitRepo> favorites = await getFavoritesUseCase();
-        List<String> favoriteNames =
-            favorites.map((favorite) => favorite.name).toList();
         List<HistoryItem> historyItems = queries.map((query) {
-          if (favoriteNames.contains(query)) {
-            return HistoryItem(name: query, isFavorite: true);
-          } else {
-            return HistoryItem(name: query, isFavorite: false);
-          }
+          return HistoryItem(
+            name: query,
+            isFavorite: favorites.any((element) => element.name == query),
+          );
         }).toList();
         emit(HistoryLoaded(historyItems: historyItems));
       }

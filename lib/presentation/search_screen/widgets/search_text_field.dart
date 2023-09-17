@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:git_repos_search/consts/app_colors.dart';
+import 'package:git_repos_search/consts/app_strings.dart';
 import 'package:git_repos_search/consts/image_assets.dart';
 import 'package:git_repos_search/presentation/search_screen/bloc/search_bloc.dart';
 
@@ -88,7 +89,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
             ),
           ),
         ),
-        hintText: 'Search',
+        hintText: AppStrings.hintText,
         hintStyle: const TextStyle(color: AppColors.argent),
       ),
       onChanged: (value) => _onInputChanged(context, value),
@@ -97,13 +98,11 @@ class _SearchTextFieldState extends State<SearchTextField> {
 
   void _onInputChanged(BuildContext context, String value) {
     setState(() {
-        _isSuffixIconVisible = _inputController.text.isNotEmpty;
-      },
-    );
+      _isSuffixIconVisible = _inputController.text.isNotEmpty;
+    });
     if (value.trim().isNotEmpty) {
       context.read<SearchBloc>().add(SearchGitReposEvent(value));
     }
-
   }
 
   void _onClearInput() {

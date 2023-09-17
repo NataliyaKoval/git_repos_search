@@ -8,8 +8,8 @@ import 'package:git_repos_search/domain/repository/repository.dart';
 import 'package:git_repos_search/domain/use_cases/get_favorites_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/remove_favorites_use_case.dart';
 import 'package:git_repos_search/presentation/favorite_screen/bloc/favorite_cubit.dart';
-import 'package:git_repos_search/presentation/widgets/empty_list_text.dart';
-import 'package:git_repos_search/presentation/widgets/git_repo_list_item.dart';
+import 'package:git_repos_search/presentation/favorite_screen/widgets/empty_favorite_container.dart';
+import 'package:git_repos_search/presentation/favorite_screen/widgets/favorite_loaded_container.dart';
 
 class FavoritePage extends StatelessWidget {
   const FavoritePage({Key? key}) : super(key: key);
@@ -28,9 +28,7 @@ class FavoritePage extends StatelessWidget {
       child: Builder(builder: (context) {
         return WillPopScope(
           onWillPop: () async {
-            final List<int> removedGitRepos =
-                context.read<FavoriteCubit>().removedFavoriteIndexes;
-            Navigator.of(context).pop(removedGitRepos);
+            _navigateToSearchScreen(context);
             return false;
           },
           child: Scaffold(
@@ -43,28 +41,11 @@ class FavoritePage extends StatelessWidget {
               child: BlocBuilder<FavoriteCubit, FavoriteState>(
                 builder: (context, state) {
                   if (state is FavoriteLoaded) {
-                    return ListView.separated(
-                      separatorBuilder: (context, index) => const SizedBox(
-                        height: 8,
-                      ),
-                      itemCount: state.gitRepos.length,
-                      itemBuilder: (context, index) => GitRepoListItem(
-                        gitRepo: state.gitRepos[index],
-                        onPressed: () {
-                          context
-                              .read<FavoriteCubit>()
-                              .removeFavorite(state.gitRepos[index]);
-                        },
-                      ),
-                    );
+                    return FavoriteLoadedContainer(gitRepos: state.gitRepos);
                   } else if (state is FavoriteEmpty) {
-                    return Center(
-                      child: EmptyListText(
-                        text: AppStrings.noFavorites,
-                      ),
-                    );
+                    return const EmptyFavoriteContainer();
                   } else if (state is FavoriteLoading) {
-                    return const CircularProgressIndicator();
+                    return const Center(child: CircularProgressIndicator());
                   } else {
                     return Container();
                   }
@@ -79,7 +60,6 @@ class FavoritePage extends StatelessWidget {
 
   PreferredSizeWidget? _buildAppBar(BuildContext context) {
     return AppBar(
-
       toolbarHeight: 54,
       backgroundColor: AppColors.ghostWhite,
       centerTitle: true,
@@ -96,9 +76,7 @@ class FavoritePage extends StatelessWidget {
           ),
           child: IconButton(
             onPressed: () {
-              final List<int> removedGitRepos =
-                  context.read<FavoriteCubit>().removedFavoriteIndexes;
-              Navigator.of(context).pop(removedGitRepos);
+              _navigateToSearchScreen(context);
             },
             icon: SvgPicture.asset(
               ImageAssets.arrow,
@@ -108,5 +86,11 @@ class FavoritePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _navigateToSearchScreen(BuildContext context) {
+    final List<int> removedGitRepos =
+        context.read<FavoriteCubit>().removedFavoriteIndexes;
+    Navigator.of(context).pop(removedGitRepos);
   }
 }

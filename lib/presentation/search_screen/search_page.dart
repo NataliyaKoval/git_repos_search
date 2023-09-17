@@ -113,7 +113,7 @@ class _SearchPageState extends State<SearchPage> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
-              onPressed: () => _awaitReturnValueFromFavoriteScreen(context),
+              onPressed: () => _navigateToFavoriteScreen(context),
               icon: SvgPicture.asset(
                 ImageAssets.star,
                 color: AppColors.ghostWhite,
@@ -151,7 +151,7 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  void _awaitReturnValueFromFavoriteScreen(BuildContext context) async {
+  void _navigateToFavoriteScreen(BuildContext context) async {
     if (!context.mounted) return;
     final List<int> result = await Navigator.push(
         context,
