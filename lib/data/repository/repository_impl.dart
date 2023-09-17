@@ -50,4 +50,9 @@ class RepositoryImpl implements Repository {
     return localDatabase.getSavedQueries();
   }
 
+  @override
+  Future<List> getFavoriteKeys() async {
+    return localDatabase.getFavoriteKeys();
+  }
+
 }

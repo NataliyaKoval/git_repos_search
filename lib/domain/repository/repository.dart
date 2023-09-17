@@ -13,4 +13,6 @@ abstract class Repository {
   Future<void> saveQuery(String query);
 
   Future<List<String>> getSavedQueries();
+
+  Future<List> getFavoriteKeys();
 }

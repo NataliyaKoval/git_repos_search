@@ -11,6 +11,8 @@ class AppStrings {
 
   static String get whatFound => 'What we found';
 
+  static String get hintText => 'Search';
+
   static String get searchHistory => 'Search History';
 
   static String get noFavorites =>

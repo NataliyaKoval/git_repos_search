@@ -6,6 +6,7 @@ import 'package:git_repos_search/consts/app_strings.dart';
 import 'package:git_repos_search/consts/image_assets.dart';
 import 'package:git_repos_search/domain/repository/repository.dart';
 import 'package:git_repos_search/domain/use_cases/fetch_git_repos_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/get_favorite_keys_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/get_favorites_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/get_saved_queries_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/save_query_use_case.dart';
@@ -51,6 +52,9 @@ class _SearchPageState extends State<SearchPage> {
           repository: context.read<Repository>(),
         ),
         getFavoritesUseCase: GetFavoritesUseCase(
+          repository: context.read<Repository>(),
+        ),
+        getFavoriteKeysUseCase: GetFavoriteKeysUseCase(
           repository: context.read<Repository>(),
         ),
       )..add(PageLoadedEvent()),
@@ -109,7 +113,7 @@ class _SearchPageState extends State<SearchPage> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
-              onPressed: () => _awaitReturnValueFromFavoriteScreen(context),
+              onPressed: () => _navigateToFavoriteScreen(context),
               icon: SvgPicture.asset(
                 ImageAssets.star,
                 color: AppColors.ghostWhite,
@@ -147,7 +151,7 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  void _awaitReturnValueFromFavoriteScreen(BuildContext context) async {
+  void _navigateToFavoriteScreen(BuildContext context) async {
     if (!context.mounted) return;
     final List<int> result = await Navigator.push(
         context,
