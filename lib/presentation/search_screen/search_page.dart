@@ -4,6 +4,7 @@ import 'package:git_repos_search/consts/app_colors.dart';
 import 'package:git_repos_search/consts/app_strings.dart';
 import 'package:git_repos_search/domain/repository/repository.dart';
 import 'package:git_repos_search/domain/use_cases/fetch_git_repos_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/toggle_favorite_use_case.dart';
 import 'package:git_repos_search/presentation/search_screen/widgets/search_results_list.dart';
 import 'package:git_repos_search/presentation/search_screen/widgets/search_text_field.dart';
 
@@ -28,12 +29,14 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<SearchBloc>(
-      create: (BuildContext context) =>
-          SearchBloc(
-            fetchGitReposUseCase: FetchGitReposUseCase(
-              repository: context.read<Repository>(),
-            ),
-          ),
+      create: (BuildContext context) => SearchBloc(
+        fetchGitReposUseCase: FetchGitReposUseCase(
+          repository: context.read<Repository>(),
+        ),
+        toggleFavoritesUsecase: ToggleFavoritesUsecase(
+          repository: context.read<Repository>(),
+        ),
+      ),
       child: Builder(builder: (context) {
         return BlocListener<SearchBloc, SearchState>(
           listener: (context, state) {

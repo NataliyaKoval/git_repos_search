@@ -45,4 +45,25 @@ class GitRepoEntity implements GitRepo {
   @override
   @JsonKey(includeFromJson: false)
   final bool isFavorite;
+
+  @override
+  GitRepoEntity copyWith({
+    int? id,
+    String? nodeId,
+    String? name,
+    String? fullName,
+    bool? private,
+    String? homepage,
+    bool? isFavorite,
+  }) {
+    return GitRepoEntity(
+      id: id ?? this.id,
+      nodeId: nodeId ?? this.nodeId,
+      name: name ?? this.name,
+      fullName: fullName ?? this.fullName,
+      private: private ?? this.private,
+      homepage: homepage ?? this.homepage,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
 }

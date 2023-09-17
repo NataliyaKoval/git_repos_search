@@ -16,4 +16,24 @@ class GitRepo {
   final bool private;
   final String? homepage;
   final bool isFavorite;
+
+  GitRepo copyWith({
+    int? id,
+    String? nodeId,
+    String? name,
+    String? fullName,
+    bool? private,
+    String? homepage,
+    bool? isFavorite,
+  }) {
+    return GitRepo(
+      id: id ?? this.id,
+      nodeId: nodeId ?? this.nodeId,
+      name: name ?? this.name,
+      fullName: fullName ?? this.fullName,
+      private: private ?? this.private,
+      homepage: homepage ?? this.homepage,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
 }
