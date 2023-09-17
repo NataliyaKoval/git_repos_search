@@ -25,4 +25,8 @@ class LocalDatabase {
   List<String> getSavedQueries() {
     return queriesBox.values.toList();
   }
+
+  List getFavoriteKeys() {
+    return favorites.keys.toList();
+  }
 }
