@@ -6,9 +6,14 @@ import 'package:git_repos_search/consts/app_strings.dart';
 import 'package:git_repos_search/consts/image_assets.dart';
 import 'package:git_repos_search/domain/repository/repository.dart';
 import 'package:git_repos_search/domain/use_cases/fetch_git_repos_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/get_favorites_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/get_saved_queries_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/save_query_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/toggle_favorite_use_case.dart';
 import 'package:git_repos_search/presentation/favorite_screen/favorite_page.dart';
-import 'package:git_repos_search/presentation/search_screen/widgets/search_results_list.dart';
+import 'package:git_repos_search/presentation/search_screen/widgets/empty_result_container.dart';
+import 'package:git_repos_search/presentation/search_screen/widgets/history_loaded_container.dart';
+import 'package:git_repos_search/presentation/search_screen/widgets/search_loaded_container.dart';
 import 'package:git_repos_search/presentation/search_screen/widgets/search_text_field.dart';
 
 import 'bloc/search_bloc.dart';
@@ -39,7 +44,16 @@ class _SearchPageState extends State<SearchPage> {
         toggleFavoritesUsecase: ToggleFavoritesUsecase(
           repository: context.read<Repository>(),
         ),
-      ),
+        saveQueryUseCase: SaveQueryUseCase(
+          repository: context.read<Repository>(),
+        ),
+        getSavedQueriesUseCase: GetSavedQueriesUseCase(
+          repository: context.read<Repository>(),
+        ),
+        getFavoritesUseCase: GetFavoritesUseCase(
+          repository: context.read<Repository>(),
+        ),
+      )..add(PageLoadedEvent()),
       child: Builder(builder: (context) {
         return BlocListener<SearchBloc, SearchState>(
           listener: (context, state) {
@@ -79,7 +93,7 @@ class _SearchPageState extends State<SearchPage> {
 
   PreferredSizeWidget? _buildAppBar(BuildContext context) {
     return AppBar(
-      toolbarHeight: 44,
+      toolbarHeight: 54,
       backgroundColor: AppColors.ghostWhite,
       centerTitle: true,
       title: Text(
@@ -88,7 +102,7 @@ class _SearchPageState extends State<SearchPage> {
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 11),
+          padding: const EdgeInsets.only(right: 15, top: 7, bottom: 7),
           child: Ink(
             decoration: BoxDecoration(
               color: AppColors.blue,
@@ -108,28 +122,23 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildScreenBody(BuildContext context, SearchState state) {
-    if (state is SearchLoaded) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            AppStrings.whatHaveFound,
-            style: const TextStyle(
-              color: AppColors.blue,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: SearchResultList(
-              gitRepos: state.gitRepos,
-            ),
-          ),
-        ],
+    if (state is HistoryLoaded) {
+      return HistoryLoadedContainer(
+        historyItems: state.historyItems,
+      );
+    } else if (state is HistoryEmpty) {
+      return EmptyResultContainer(
+        title: AppStrings.searchHistory,
+        description: AppStrings.noHistory,
+      );
+    } else if (state is SearchEmpty) {
+      return EmptyResultContainer(
+        title: AppStrings.whatFound,
+        description: AppStrings.noSearch,
+      );
+    } else if (state is SearchLoaded) {
+      return SearchLoadedContainer(
+        gitRepos: state.gitRepos,
       );
     } else if (state is SearchLoading) {
       return const Center(child: CircularProgressIndicator());

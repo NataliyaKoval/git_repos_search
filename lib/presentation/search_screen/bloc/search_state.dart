@@ -15,6 +15,8 @@ class SearchLoaded extends SearchState {
   final List<GitRepo> gitRepos;
 }
 
+class SearchEmpty extends SearchState {}
+
 class SearchError extends SearchState {
   SearchError({
     required this.message,
@@ -22,3 +24,13 @@ class SearchError extends SearchState {
 
   final String message;
 }
+
+class HistoryLoaded extends SearchState {
+  HistoryLoaded({
+    required this.historyItems,
+  });
+
+  final List<HistoryItem> historyItems;
+}
+
+class HistoryEmpty extends SearchState {}

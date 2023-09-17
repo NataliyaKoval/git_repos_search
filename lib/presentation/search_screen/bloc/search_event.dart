@@ -20,3 +20,5 @@ class UpdateListEvent extends SearchEvent {
 
   final List<int> removedFavorites;
 }
+
+class PageLoadedEvent extends SearchEvent {}

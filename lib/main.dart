@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter<GitRepoEntity>(GitRepoEntityAdapter());
+  await Hive.openBox<String>('queries');
   await Hive.openBox<GitRepoEntity>('favorites');
   runApp(const MyApp());
 }

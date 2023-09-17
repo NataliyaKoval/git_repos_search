@@ -18,6 +18,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
   late FocusNode _textFieldFocusNode;
   late TextEditingController _inputController;
   bool _isFilled = false;
+  bool _isSuffixIconVisible = false;
 
   @override
   void initState() {
@@ -75,12 +76,15 @@ class _SearchTextFieldState extends State<SearchTextField> {
           minHeight: 20,
           minWidth: 20,
         ),
-        suffixIcon: Padding(
-          padding: const EdgeInsets.only(right: 18),
-          child: IconButton(
-            onPressed: () => _inputController.clear(),
-            icon: SvgPicture.asset(
-              ImageAssets.close,
+        suffixIcon: Visibility(
+          visible: _isSuffixIconVisible,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 18),
+            child: IconButton(
+              onPressed: _onClearInput,
+              icon: SvgPicture.asset(
+                ImageAssets.close,
+              ),
             ),
           ),
         ),
@@ -92,6 +96,20 @@ class _SearchTextFieldState extends State<SearchTextField> {
   }
 
   void _onInputChanged(BuildContext context, String value) {
-    context.read<SearchBloc>().add(SearchGitReposEvent(value));
+    setState(() {
+        _isSuffixIconVisible = _inputController.text.isNotEmpty;
+      },
+    );
+    if (value.trim().isNotEmpty) {
+      context.read<SearchBloc>().add(SearchGitReposEvent(value));
+    }
+
+  }
+
+  void _onClearInput() {
+    _inputController.clear();
+    setState(() {
+      _isSuffixIconVisible = false;
+    });
   }
 }
