@@ -9,6 +9,7 @@ import 'package:git_repos_search/domain/use_cases/get_favorites_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/get_saved_queries_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/save_query_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/toggle_favorite_use_case.dart';
+import 'package:git_repos_search/utils/app_error.dart';
 import 'package:git_repos_search/utils/debouncer.dart';
 
 part 'search_event.dart';
@@ -70,8 +71,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         }).toList();
         emit(SearchLoaded(gitRepos: checkedGitRepos));
       }
-    } catch (e) {
-      print(e);
+    } on AppError catch (e) {
+      emit(SearchError(message: e.message));
     } finally {
       isFutureRunning = false;
     }
