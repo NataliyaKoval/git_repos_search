@@ -34,4 +34,9 @@ class RepositoryImpl implements Repository {
   void removeFromFavorites(GitRepo gitRepo) {
     localDatabase.removeFromFavorites(gitRepo.id);
   }
+
+  @override
+  List<GitRepo> getFavorites() {
+    return localDatabase.getFavorites();
+  }
 }

@@ -12,4 +12,8 @@ class LocalDatabase {
   void removeFromFavorites(int key) {
     favorites.delete(key);
   }
+
+  List<GitRepoEntity> getFavorites() {
+    return favorites.values.toList();
+  }
 }

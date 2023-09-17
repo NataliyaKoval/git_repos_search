@@ -7,4 +7,6 @@ abstract class Repository {
   void addToFavorites(GitRepo gitRepo);
 
   void removeFromFavorites(GitRepo gitRepo);
+
+  List<GitRepo> getFavorites();
 }
