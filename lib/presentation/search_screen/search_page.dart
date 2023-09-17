@@ -6,10 +6,15 @@ import 'package:git_repos_search/consts/app_strings.dart';
 import 'package:git_repos_search/consts/image_assets.dart';
 import 'package:git_repos_search/domain/repository/repository.dart';
 import 'package:git_repos_search/domain/use_cases/fetch_git_repos_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/get_favorites_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/get_saved_queries_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/save_query_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/toggle_favorite_use_case.dart';
 import 'package:git_repos_search/presentation/favorite_screen/favorite_page.dart';
+import 'package:git_repos_search/presentation/search_screen/widgets/history_loaded_container.dart';
 import 'package:git_repos_search/presentation/search_screen/widgets/search_results_list.dart';
 import 'package:git_repos_search/presentation/search_screen/widgets/search_text_field.dart';
+import 'package:git_repos_search/presentation/widgets/empty_list_text.dart';
 
 import 'bloc/search_bloc.dart';
 
@@ -39,7 +44,16 @@ class _SearchPageState extends State<SearchPage> {
         toggleFavoritesUsecase: ToggleFavoritesUsecase(
           repository: context.read<Repository>(),
         ),
-      ),
+        saveQueryUseCase: SaveQueryUseCase(
+          repository: context.read<Repository>(),
+        ),
+        getSavedQueriesUseCase: GetSavedQueriesUseCase(
+          repository: context.read<Repository>(),
+        ),
+        getFavoritesUseCase: GetFavoritesUseCase(
+          repository: context.read<Repository>(),
+        ),
+      )..add(PageLoadedEvent()),
       child: Builder(builder: (context) {
         return BlocListener<SearchBloc, SearchState>(
           listener: (context, state) {
@@ -108,7 +122,23 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildScreenBody(BuildContext context, SearchState state) {
-    if (state is SearchLoaded) {
+    if (state is HistoryLoaded) {
+      return HistoryLoadedContainer(
+        historyItems: state.historyItems,
+      );
+    } else if (state is HistoryEmpty) {
+      return Center(
+        child: EmptyListText(
+          text: AppStrings.noHistory,
+        ),
+      );
+    } else if (state is SearchEmpty) {
+      return Center(
+        child: EmptyListText(
+          text: AppStrings.noSearch,
+        ),
+      );
+    } else if (state is SearchLoaded) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

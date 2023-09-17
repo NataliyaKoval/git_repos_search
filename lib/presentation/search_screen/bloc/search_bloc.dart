@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:git_repos_search/domain/models/git_repo.dart';
 import 'package:git_repos_search/domain/models/git_repo_response.dart';
+import 'package:git_repos_search/domain/models/history_item.dart';
 import 'package:git_repos_search/domain/use_cases/fetch_git_repos_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/get_favorites_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/get_saved_queries_use_case.dart';
+import 'package:git_repos_search/domain/use_cases/save_query_use_case.dart';
 import 'package:git_repos_search/domain/use_cases/toggle_favorite_use_case.dart';
 import 'package:git_repos_search/utils/debouncer.dart';
 
@@ -14,14 +18,21 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   SearchBloc({
     required this.fetchGitReposUseCase,
     required this.toggleFavoritesUsecase,
+    required this.saveQueryUseCase,
+    required this.getSavedQueriesUseCase,
+    required this.getFavoritesUseCase,
   }) : super(SearchInitial()) {
     on<SearchGitReposEvent>(_searchGitRepos, transformer: Debouncer.debounce());
     on<ToggleFavoriteEvent>(_toggleFavorite);
     on<UpdateListEvent>(_updateListAfterRemovingFavorites);
+    on<PageLoadedEvent>(_getQueriesHistory);
   }
 
   final FetchGitReposUseCase fetchGitReposUseCase;
   final ToggleFavoritesUsecase toggleFavoritesUsecase;
+  final SaveQueryUseCase saveQueryUseCase;
+  final GetSavedQueriesUseCase getSavedQueriesUseCase;
+  final GetFavoritesUseCase getFavoritesUseCase;
 
   static const int _itemsCount = 15;
   bool isFutureRunning = false;
@@ -36,14 +47,17 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     emit(SearchLoading());
 
     try {
+      await saveQueryUseCase(event.query);
       GitRepoResponse response = await fetchGitReposUseCase.call(GitRepoParams(
         query: event.query,
         itemsCount: _itemsCount,
       ));
       allGitRepos = response.items;
-      emit(
-        SearchLoaded(gitRepos: allGitRepos),
-      );
+      if (allGitRepos.isEmpty) {
+        emit(SearchEmpty());
+      } else {
+        emit(SearchLoaded(gitRepos: allGitRepos));
+      }
     } catch (e) {
       print(e);
     } finally {
@@ -51,13 +65,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
   }
 
-  Future<void> _toggleFavorite(ToggleFavoriteEvent event, Emitter<SearchState> emit) async {
+  Future<void> _toggleFavorite(
+      ToggleFavoriteEvent event, Emitter<SearchState> emit) async {
     try {
-      GitRepo changedGitRepo =
-      await toggleFavoritesUsecase(event.gitRepo);
+      GitRepo changedGitRepo = await toggleFavoritesUsecase(event.gitRepo);
 
       final index =
-      allGitRepos.indexWhere((element) => element.id == event.gitRepo.id);
+          allGitRepos.indexWhere((element) => element.id == event.gitRepo.id);
       allGitRepos[index] = changedGitRepo;
       emit(
         SearchLoaded(gitRepos: allGitRepos),
@@ -67,8 +81,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     }
   }
 
-  Future<void> _updateListAfterRemovingFavorites(UpdateListEvent event, Emitter<SearchState> emit
-      ) async {
+  Future<void> _updateListAfterRemovingFavorites(
+      UpdateListEvent event, Emitter<SearchState> emit) async {
     List<GitRepo> newList = allGitRepos.map((e) {
       if (event.removedFavorites.contains(e.id)) {
         return e.copyWith(isFavorite: false);
@@ -80,5 +94,30 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     emit(
       SearchLoaded(gitRepos: allGitRepos),
     );
+  }
+
+  Future<void> _getQueriesHistory(
+      PageLoadedEvent event, Emitter<SearchState> emit) async {
+    try {
+      List<String> queries = await getSavedQueriesUseCase();
+
+      if (queries.isEmpty) {
+        emit(HistoryEmpty());
+      } else {
+        List<GitRepo> favorites = await getFavoritesUseCase();
+        List<String> favoriteNames =
+            favorites.map((favorite) => favorite.name).toList();
+        List<HistoryItem> historyItems = queries.map((query) {
+          if (favoriteNames.contains(query)) {
+            return HistoryItem(name: query, isFavorite: true);
+          } else {
+            return HistoryItem(name: query, isFavorite: false);
+          }
+        }).toList();
+        emit(HistoryLoaded(historyItems: historyItems));
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 }

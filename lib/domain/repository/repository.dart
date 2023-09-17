@@ -9,4 +9,8 @@ abstract class Repository {
   void removeFromFavorites(GitRepo gitRepo);
 
   List<GitRepo> getFavorites();
+
+  Future<void> saveQuery(String query);
+
+  Future<List<String>> getSavedQueries();
 }

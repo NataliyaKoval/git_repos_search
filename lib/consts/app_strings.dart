@@ -16,4 +16,7 @@ class AppStrings {
 
   static String get noHistory =>
       'You have empty history.\nClick on search to start journey!';
+
+  static String get noSearch =>
+      'Nothing was find for your search.\nPlease check the spelling';
 }

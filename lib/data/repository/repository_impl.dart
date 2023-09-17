@@ -39,4 +39,15 @@ class RepositoryImpl implements Repository {
   List<GitRepo> getFavorites() {
     return localDatabase.getFavorites();
   }
+
+  @override
+  Future<void> saveQuery(String query) async {
+    localDatabase.saveQuery(query);
+  }
+
+  @override
+  Future<List<String>> getSavedQueries() async {
+    return localDatabase.getSavedQueries();
+  }
+
 }
