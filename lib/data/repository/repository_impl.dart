@@ -5,6 +5,7 @@ import 'package:git_repos_search/data/entity/git_repo_response_entity.dart';
 import 'package:git_repos_search/domain/models/git_repo.dart';
 import 'package:git_repos_search/domain/models/git_repo_response.dart';
 import 'package:git_repos_search/domain/repository/repository.dart';
+import 'package:git_repos_search/utils/app_error.dart';
 
 class RepositoryImpl implements Repository {
   const RepositoryImpl({
@@ -17,17 +18,17 @@ class RepositoryImpl implements Repository {
 
   @override
   Future<GitRepoResponse> fetchGitRepos(String query, int itemsCount) async {
-    GitRepoResponseEntity response = await restApiClient.fetchGitRepos(
-      query,
-      itemsCount,
-    );
+    GitRepoResponseEntity response =
+        await execute(() => restApiClient.fetchGitRepos(
+              query,
+              itemsCount,
+            ));
     return response;
   }
 
   @override
   void addToFavorites(GitRepo gitRepo) {
-    localDatabase
-        .addToFavorites(GitRepoEntity.fromGitRepo(gitRepo));
+    localDatabase.addToFavorites(GitRepoEntity.fromGitRepo(gitRepo));
   }
 
   @override
@@ -54,5 +55,4 @@ class RepositoryImpl implements Repository {
   Future<List> getFavoriteKeys() async {
     return localDatabase.getFavoriteKeys();
   }
-
 }
